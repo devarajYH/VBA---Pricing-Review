@@ -1,0 +1,134 @@
+
+'Prep 1.1
+'Clone Sample deck for all region
+
+Sub prep_inputDecks_fromSampleFile()
+
+Dim Message, Title, Default, qtr
+Message = "Enter quarter and year"    ' Set prompt.
+Title = "Final deck Suffix"    ' Set title.
+Default = "Q1'22"
+
+qtr = InputBox(Message, Title, Default)
+
+Set Map = ThisWorkbook.Sheets("Map")
+     
+For Inc = 2 To 19
+        
+    'Tgt_PPT_File = Map.Range("E" & Inc).Value
+    Region = Map.Range("H" & Inc).Value
+    Tgt_PPT_File = Region & "_" & qtr & " Rates Review.pptx"
+    'Tgt_PPT_File = Region & ".pptx"
+
+    'Copy a file
+    FileCopy "\\amfile01\WebReports\Reports\Personal\Genpact Team\Team\Adhoc\Rates Review PPTs Working\Inputs\_InputDecks\1sampleDeck.pptx", _
+    "\\amfile01\WebReports\Reports\Personal\Genpact Team\Team\Adhoc\Rates Review PPTs Working\Inputs\_InputDecks\" & Tgt_PPT_File
+
+Next Inc
+MsgBox "Input decks prepared for " & Inc - 2 & " Regions for " & qtr
+End Sub
+
+
+
+'Prep 1.2
+'Intro Slide
+'Update Final Decks FirstSlide, Month Name etc..
+
+Sub prep_introSlide_inputFiles()
+    Dim New_PowerPoint As Object
+    'Dim Src_PPT     As PowerPoint.Presentation
+    Dim Tgt_PPT     As PowerPoint.Presentation
+    Dim Inc         As Integer
+    Dim src         As Integer
+    
+    Set Map = ThisWorkbook.Sheets("Map")
+    
+    
+    For Inc = 2 To 19
+        Tgt_PPT_Path = Map.Range("F" & Inc).Value
+        Tgt_PPT_Name = Map.Range("E" & Inc).Value
+        
+        Set New_PowerPoint = Nothing
+        On Error Resume Next
+        Set New_PowerPoint = GetObject(, "PowerPoint.Application")
+        On Error GoTo 0
+        
+        '<< Check whether a PPT Application is Open if open Close and open a New Application >>
+        If New_PowerPoint Is Nothing Then
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+        Else
+            New_PowerPoint.Quit
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+            On Error GoTo 0
+        End If
+        
+        Tgt_PPT_File = Dir(Tgt_PPT_Path & "\" & Tgt_PPT_Name)
+        
+        Set Tgt_PPT = New_PowerPoint.Presentations.Open(Tgt_PPT_Path & "\" & Tgt_PPT_File)
+        
+        'Activating the Target Presentation and Pasting at/after Target Slide(Index)
+        Tgt_PPT.Windows(1).Activate
+        
+        'ActivePresentation.Slides(n).Shapes(n).TextFrame.TextRange.Text = n
+        'Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes(2).TextFrame. _
+        'TextRange.Text = Map.Range("BL" & src).Value & " - " & Map.Range("H" & Inc).Value
+        
+        'Update 1st Slide subtitle
+        Tgt_PPT.Slides(1).Shapes(1).TextFrame.TextRange.Text = Map.Range("E22").Value & " - " & Map.Range("H" & Inc).Value
+        'Tgt_PPT.Slides(1).Shapes(2).TextFrame.TextRange.Text = Map.Range("H" & Inc).Value
+        Tgt_PPT.Slides(1).Shapes(2).TextFrame.TextRange.Text = Map.Range("E23").Value
+        
+        'For SldNo = 2 To 8
+            
+        '    Set oSld = Tgt_PPT.Slides(SldNo).Shapes
+        '    ShpNumber = 1
+            
+            'For shpCount = 1 To oSld.Count
+            'If Tgt_PPT.Slides(SldNo).Shapes(ShpNumber).Type = msoPicture Then
+            'With Tgt_PPT.Slides(SldNo).Shapes(1)
+                'size:
+                ''1 inch = 72 points
+                '.Height = 72 * 3.63
+                '.Width = 72 * 10
+                '.ScaleHeight 0.75, msoTrue
+                '.ScaleWidth 0.75, msoTrue
+                '.LockAspectRatio = msoTrue
+                'position:
+                '.Rotation = 0
+                '.Left = 0
+                '.Top = 72 * 1.2
+                'Relative to original picture size = true
+           ' End With
+           
+            'Else
+            '   ShpNumber = ShpNumber + 1
+            'End If
+            'Next shpCount
+            
+        'Next SldNo
+        Application.CutCopyMode = False
+        
+        Tgt_PPT.Save
+        Tgt_PPT.Close
+        
+        'Src_PPT.Close
+        'New_PowerPoint.Quit
+        Set New_PowerPoint = Nothing
+        'Set Src_PPT = Nothing
+        Set Tgt_PPT = Nothing
+        'Set shpCount = Nothing
+        'Set ShpNumber = Nothing
+        'Set oSld = Nothing
+    Next Inc
+    
+    'New_PowerPoint.Quit
+    Set New_PowerPoint = Nothing
+    MsgBox "Introductory Slide Updated Successfully", vbOKOnly, "Final Presentation Ready"
+End Sub
+
+
+
