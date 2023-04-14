@@ -1,0 +1,96 @@
+'Prep 2
+'Analysis
+'Export Analysis Data(A1:AD32) into PPT(Model to Model level)
+'make sure order of sheets(branch) (exBVR,TXR,WCR)are in correct order in model level excel files.
+
+Sub prep_excel_to_ppt_analysis()
+
+    Set Map = ThisWorkbook.Sheets("Map")
+    
+    For Inc = 7 To 7
+    
+    Dim path_name As String, name As String
+    'Define Workbook Path & Name
+    path_name = Map.Range("BP" & Inc)
+    'Define Workbook Names
+    name = Map.Range("BN" & Inc)
+    'Open Workbooks
+    Workbooks.Open Filename:=path_name
+
+
+    Dim rng         As Range
+    Dim PowerPointApp As Object
+    Dim myPresentation As Object
+    Dim mySlide     As Object
+    Dim myShape     As Object
+    Dim ArrayOne    As Variant
+    
+    'Create an Instance of PowerPoint
+    On Error Resume Next
+    
+    'Is PowerPoint already opened
+    Set PowerPointApp = GetObject(class:="PowerPoint.Application")
+    
+    'Clear the error between errors
+    Err.Clear
+    
+    'If PowerPoint is not already open then open PowerPoint
+    If PowerPointApp Is Nothing Then Set PowerPointApp = CreateObject(class:="PowerPoint.Application")
+    
+    'Handle if the PowerPoint Application is not found
+    If Err.Number = 429 Then
+        MsgBox "PowerPoint could Not be found, aborting."
+        Exit Sub
+    End If
+    
+    On Error GoTo 0
+    
+    'Optimize Code
+    Application.ScreenUpdating = False
+    
+    'Create a New Presentation
+    Set myPresentation = PowerPointApp.Presentations.Add
+    'Dim pptSlide   As Slide
+    'Dim pptLayout  As CustomLayout
+    'Dim sld        As Slides
+    
+    Dim WS_Count    As Integer
+    Dim I           As Integer
+    
+    ' Set WS_Count equal to the number of worksheets in the active
+    ' workbook.
+    WS_Count = ActiveWorkbook.Worksheets.Count - 3
+    
+    
+    ' Begin the loop.
+    For I = 1 To WS_Count
+        ActiveWorkbook.Worksheets(WS_Count - I + 1).Select
+        Worksheets(WS_Count - I + 1).Sort.SortFields.Clear
+        
+        'Range("B4:H20").Sort Key1:=Range("C4"), Header:=xlYes, _
+        '                    Order1:=xlDescending
+        
+        Set rng = ActiveWorkbook.Worksheets(WS_Count - I + 1).Range("B1:AE23")
+        rng.Copy
+        
+        Set mySlide = myPresentation.Slides.Add(1, 12)        '11 = ppLayoutTitleOnly
+        mySlide.Shapes.PasteSpecial DataType:=2        '2 = ppPasteEnhancedMetafile
+        Application.CutCopyMode = False
+        
+        Set myShape = mySlide.Shapes(mySlide.Shapes.Count)
+        'Set position:
+        myShape.Left = 5
+        myShape.Top = 30 '58
+        'myShape.Height = 665
+        myShape.Width = 955
+        
+    Next I
+    
+   myPresentation.PageSetup.SlideSize = PpSlideSizeType.ppSlideSizeOnScreen
+   'Workbooks(Map.Range("BP" & Inc).Value).Close savechanges:=False
+   Application.CutCopyMode = False
+   ActiveWorkbook.Close savechanges:=False
+  
+Next Inc
+  MsgBox "Analysis snips extracted from Excel"
+End Sub
