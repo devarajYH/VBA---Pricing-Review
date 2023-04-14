@@ -1,0 +1,302 @@
+
+'Analysis, QTC and UOR
+
+'Load 3
+'Analysis Data
+'Analysis data to Final decks (Model to branch level)
+'Make sure analysis slide has 3 shapes - Resize will conside 4th shape(Table snip)
+
+Sub load_AnalysisSnaps_to_finalPPT()
+    Dim New_PowerPoint As Object
+    Dim Src_PPT     As PowerPoint.Presentation
+    Dim Tgt_PPT     As PowerPoint.Presentation
+    Dim Inc         As Integer
+    Dim src         As Integer
+    
+    Set Map = ThisWorkbook.Sheets("Map")
+
+
+    For Inc = 2 To 19
+        Tgt_PPT_Path = Map.Range("F" & Inc).Value
+        Tgt_PPT_Name = Map.Range("E" & Inc).Value
+        
+        Set New_PowerPoint = Nothing
+        On Error Resume Next
+        Set New_PowerPoint = GetObject(, "PowerPoint.Application")
+        On Error GoTo 0
+        
+        '<< Check whether a PPT Application is Open if open Close and open a New Application >>
+        If New_PowerPoint Is Nothing Then
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+        Else
+            New_PowerPoint.Quit
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+            On Error GoTo 0
+        End If
+        
+        Tgt_PPT_File = Dir(Tgt_PPT_Path & "\" & Tgt_PPT_Name)
+        Set Tgt_PPT = New_PowerPoint.Presentations.Open(Tgt_PPT_Path & "\" & Tgt_PPT_File)
+        
+        'Tgt_PPT.Slides(26).Delete
+        'Tgt_PPT.Slides(25).Delete
+        'Tgt_PPT.Slides(24).Delete
+        'Tgt_PPT.Slides(15).Delete
+        'Tgt_PPT.Slides(10).Delete
+          
+        '1)2-6,  '2)19-23 <<< select alternative range
+        For src = 7 To 7
+        
+        Src_PPT_Path = Map.Range("BI" & src).Value
+        Src_PPT_Name = Map.Range("BH" & src).Value
+        
+        Src_PPT_File = Dir(Src_PPT_Path & "\" & Src_PPT_Name)
+        Set Src_PPT = New_PowerPoint.Presentations.Open(Src_PPT_Path & "\" & Src_PPT_File)
+        
+        'Activating the Target Presentation and Pasting at/after Target Slide(Index)
+        Tgt_PPT.Windows(1).Activate
+        
+            Set oSld = Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes
+            ShpNumber = 1
+            'Tgt_PPT.Slides(Map.Range("W" & src).Value).Shapes(3).Delete
+            
+        'Update TextBox
+        'ActivePresentation.Slides(n).Shapes(n).TextFrame.TextRange.Text = n
+        Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes(2).TextFrame. _
+        TextRange.Text = Map.Range("BL" & src).Value & " - " & Map.Range("H" & Inc).Value
+            
+            
+            For shpCount = 1 To oSld.Count
+                If Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes(ShpNumber).Type = msoPicture Then
+                   Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes(ShpNumber).Delete
+                    
+                Else
+                    ShpNumber = ShpNumber + 1
+                End If
+            Next shpCount
+            
+            Src_PPT.Windows(1).Activate
+            Src_PPT.Slides.Range(Array(Map.Range("I" & Inc).Value)).Copy
+            
+            Tgt_PPT.Windows(1).Activate
+            Tgt_PPT.Slides.Paste Index:=Map.Range("BK" & src).Value
+
+            With Tgt_PPT
+                .Slides(Map.Range("BK" & src).Value).Shapes(1).Copy
+                '.Slides(Map.Range("BK" & src).Value).Shapes.Range(Array(3, 4)).Copy
+                .Slides(Map.Range("BK" & src).Value + 1).Shapes.Paste
+                .Slides(Map.Range("BK" & src).Value).Delete
+            End With
+            
+            
+            With Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes(3)
+                'size:
+                .LockAspectRatio = msoFalse
+                '.LockAspectRatio = msoTrue
+                .Height = 72 * 3
+                .Width = 72 * 13.2
+                '.ScaleHeight 0.75, msoTrue
+                '.ScaleWidth 0.75, msoTrue
+                
+                'position:
+                '.Rotation = 0
+                .Left = 72 * 0.08
+                .Top = 72 * 0.77
+                'Relative to original picture size = true
+                
+            End With
+            
+            'With Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes(3)
+            '    .Height = 72 * 1
+            '    .Top = 72 * 6
+            'End With
+
+        Src_PPT.Close
+        
+        Next src
+        
+        Tgt_PPT.Save
+        Tgt_PPT.Close
+        New_PowerPoint.Quit
+        Set New_PowerPoint = Nothing
+        Set Src_PPT = Nothing
+        Set Tgt_PPT = Nothing
+        Set shpCount = Nothing
+        Set ShpNumber = Nothing
+        Set oSld = Nothing
+    Next Inc
+    
+    MsgBox "Specific Slides from Source To Target Presentations Copied Successfully", vbOKOnly, "Final Presentation Ready"
+End Sub
+
+
+
+
+
+
+'####################################################################################################################
+
+'Load 4
+'QTC & UOR
+'Merge QTC & UOR into Analysis Slide
+'Model level PPT to Final PPT QTC & UOR
+
+Sub load_QTCnUORSnaps_to_finalPPT()
+    Dim New_PowerPoint As Object
+    Dim Src_PPT     As PowerPoint.Presentation
+    Dim Tgt_PPT     As PowerPoint.Presentation
+    Dim Inc         As Integer
+    Dim src         As Integer
+    
+    Set Map = ThisWorkbook.Sheets("Map")
+
+
+    For Inc = 2 To 18
+        Tgt_PPT_Path = Map.Range("F" & Inc).Value
+        Tgt_PPT_Name = Map.Range("E" & Inc).Value
+        
+        Set New_PowerPoint = Nothing
+        On Error Resume Next
+        Set New_PowerPoint = GetObject(, "PowerPoint.Application")
+        On Error GoTo 0
+        
+        '<< Check whether a PPT Application is Open if open Close and open a New Application >>
+        If New_PowerPoint Is Nothing Then
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+        Else
+            New_PowerPoint.Quit
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+            On Error GoTo 0
+        End If
+        
+        Tgt_PPT_File = Dir(Tgt_PPT_Path & "\" & Tgt_PPT_Name)
+        Set Tgt_PPT = New_PowerPoint.Presentations.Open(Tgt_PPT_Path & "\" & Tgt_PPT_File)
+
+        
+        '1)2-6,  '2)19-23 <<< select alternative range
+        For src = 8 To 12
+        
+        Src_PPT_Path = Map.Range("BI" & src).Value
+        Src_PPT_Name = Map.Range("BH" & src).Value
+        
+        Src_PPT_File = Dir(Src_PPT_Path & "\" & Src_PPT_Name)
+        Set Src_PPT = New_PowerPoint.Presentations.Open(Src_PPT_Path & "\" & Src_PPT_File)
+        
+        'Activating the Target Presentation and Pasting at/after Target Slide(Index)
+        Tgt_PPT.Windows(1).Activate
+        
+            Set oSld = Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes
+            ShpNumber = 1
+            'Tgt_PPT.Slides(Map.Range("W" & src).Value).Shapes(3).Delete
+            
+            'For shpCount = 1 To oSld.Count
+            '    If Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes(ShpNumber).Type = msoPicture Then
+            '       Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes(ShpNumber).Delete
+            '
+            '    Else
+            '        ShpNumber = ShpNumber + 1
+            '    End If
+            'Next shpCount
+            
+            Src_PPT.Windows(1).Activate
+            Src_PPT.Slides.Range(Array(Map.Range("I" & Inc).Value)).Copy
+            
+            Tgt_PPT.Windows(1).Activate
+            Tgt_PPT.Slides.Paste Index:=Map.Range("BK" & src).Value
+            
+            With Tgt_PPT
+                .Slides(Map.Range("BK" & src).Value).Shapes(1).Copy
+                '.Slides(Map.Range("BK" & src).Value).Shapes.Range(Array(1, 2)).Copy
+                .Slides(Map.Range("BK" & src).Value + 1).Shapes.Paste
+                .Slides(Map.Range("BK" & src).Value).Delete
+            End With
+            
+            With Tgt_PPT.Slides(Map.Range("BK" & src).Value).Shapes(5)
+                .LockAspectRatio = msoFalse
+                .Height = 72 * 1.7
+                .Width = 72 * 3
+                .Left = 72 * 6.4
+                .Top = 72 * 4.2
+            End With
+            
+        Src_PPT.Close
+        
+        Next src
+        
+'---------------------------------------------------------------------------------------------------------
+'---------------------------------------------------------------------------------------------------------
+
+        For src2 = 13 To 17
+        
+        src2_PPT_Path = Map.Range("BI" & src2).Value
+        src2_PPT_Name = Map.Range("BH" & src2).Value
+        
+        src2_PPT_File = Dir(src2_PPT_Path & "\" & src2_PPT_Name)
+        Set Src2_PPT = New_PowerPoint.Presentations.Open(src2_PPT_Path & "\" & src2_PPT_File)
+        
+        'Activating the Target Presentation and Pasting at/after Target Slide(Index)
+        Tgt_PPT.Windows(1).Activate
+        
+            Set oSld = Tgt_PPT.Slides(Map.Range("BK" & src2).Value).Shapes
+            ShpNumber = 1
+            'Tgt_PPT.Slides(Map.Range("W" & src2).Value).Shapes(3).Delete
+            
+            'For shpCount = 1 To oSld.Count
+            '    If Tgt_PPT.Slides(Map.Range("BK" & src2).Value).Shapes(ShpNumber).Type = msoPicture Then
+            '       Tgt_PPT.Slides(Map.Range("BK" & src2).Value).Shapes(ShpNumber).Delete
+            '
+            '    Else
+            '        ShpNumber = ShpNumber + 1
+            '    End If
+            'Next shpCount
+            
+            Src2_PPT.Windows(1).Activate
+            Src2_PPT.Slides.Range(Array(Map.Range("I" & Inc).Value)).Copy
+            
+            Tgt_PPT.Windows(1).Activate
+            Tgt_PPT.Slides.Paste Index:=Map.Range("BK" & src2).Value
+            
+            With Tgt_PPT
+                .Slides(Map.Range("BK" & src2).Value).Shapes(1).Copy
+                '.Slides(Map.Range("BK" & src2).Value).Shapes.Range(Array(1, 2)).Copy
+                .Slides(Map.Range("BK" & src2).Value + 1).Shapes.Paste
+                .Slides(Map.Range("BK" & src2).Value).Delete
+            End With
+            
+            With Tgt_PPT.Slides(Map.Range("BK" & src2).Value).Shapes(6)
+                .LockAspectRatio = msoFalse
+                .Height = 72 * 1.7
+                .Width = 72 * 5
+                .Left = 72 * 0.3
+                .Top = 72 * 4.2
+            End With
+
+            
+        Src2_PPT.Close
+        
+        Next src2
+        
+        Tgt_PPT.Save
+        Tgt_PPT.Close
+        New_PowerPoint.Quit
+        Set New_PowerPoint = Nothing
+        Set Src_PPT = Nothing
+        Set Src2_PPT = Nothing
+        Set Tgt_PPT = Nothing
+        Set shpCount = Nothing
+        Set ShpNumber = Nothing
+        Set oSld = Nothing
+    Next Inc
+    
+    MsgBox "Specific Slides from Source To Target Presentations Copied Successfully", vbOKOnly, "Final Presentation Ready"
+End Sub
+
+
+
