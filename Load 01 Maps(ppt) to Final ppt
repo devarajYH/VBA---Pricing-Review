@@ -1,0 +1,497 @@
+
+
+'Load 1
+'USA MAPS
+'US Template Map to Final file
+
+Sub load_USAMaps_to_finalPPT()
+    Dim New_PowerPoint As Object
+    Dim Src_PPT     As PowerPoint.Presentation
+    Dim Tgt_PPT     As PowerPoint.Presentation
+    
+    Dim Inc         As Integer
+    Dim src         As Integer
+    
+    'src = 5
+    
+    Set Map = ThisWorkbook.Sheets("Map")
+    
+    For Inc = 2 To 19
+        
+        Src_PPT_Path = Map.Range("Z2").Value
+        Tgt_PPT_Path = Map.Range("f" & Inc).Value
+        Src_PPT_Name = Map.Range("Y2").Value
+        Tgt_PPT_Name = Map.Range("E" & Inc).Value
+        
+        Set New_PowerPoint = Nothing
+        On Error Resume Next
+        Set New_PowerPoint = GetObject(, "PowerPoint.Application")
+        On Error GoTo 0
+        
+        '<< Check whether a PPT Application is Open if open Close and open a New Application >>
+        If New_PowerPoint Is Nothing Then
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+        Else
+            New_PowerPoint.Quit
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+            On Error GoTo 0
+        End If
+        
+        Src_PPT_File = Dir(Src_PPT_Path & "\" & Src_PPT_Name)
+        
+        Set Src_PPT = New_PowerPoint.Presentations.Open(Src_PPT_Path & "\" & Src_PPT_File)
+        
+        Tgt_PPT_File = Dir(Tgt_PPT_Path & "\" & Tgt_PPT_Name)
+        
+        Set Tgt_PPT = New_PowerPoint.Presentations.Open(Tgt_PPT_Path & "\" & Tgt_PPT_File)
+        
+        'Activating the Target Presentation and Pasting at/after Target Slide(Index)
+        Tgt_PPT.Windows(1).Activate
+        
+        For sldno = 2 To 6
+            
+            Set oSld = Tgt_PPT.Slides(Map.Range("AC" & sldno).Value).Shapes
+            ShpNumber = 1
+            
+            For shpCount = 1 To oSld.Count
+                If Tgt_PPT.Slides(Map.Range("AC" & sldno).Value).Shapes(ShpNumber).Type = msoPicture Then
+                    Tgt_PPT.Slides(Map.Range("AC" & sldno).Value).Shapes(ShpNumber).Delete
+                Else
+                    ShpNumber = ShpNumber + 1
+                End If
+            Next shpCount
+            
+            Src_PPT.Windows(1).Activate
+            Src_PPT.Slides.Range(Array(Map.Range("AB" & sldno).Value)).Copy
+            
+            Tgt_PPT.Windows(1).Activate
+            Tgt_PPT.Slides.Paste Index:=Map.Range("AC" & sldno).Value
+            
+            With Tgt_PPT
+                .Slides(Map.Range("AC" & sldno).Value).Shapes(1).Copy
+                .Slides(Map.Range("AC" & sldno).Value + 1).Shapes.Paste
+                .Slides(Map.Range("AC" & sldno).Value).Delete
+            End With
+            
+            With Tgt_PPT.Slides(Map.Range("AC" & sldno).Value).Shapes(3)
+                'size:
+                ''1 inch = 72 points
+                '.Height = 72 * 3.63
+                .Width = 72 * 9
+                '.ScaleHeight 0.75, msoTrue
+                '.ScaleWidth 0.75, msoTrue
+                '.LockAspectRatio = msoTrue
+                
+                'position:
+                '.Rotation = 0
+                .Left = 72 * 0.5
+                .Top = 72 * 1.2
+                'Relative to original picture size = true
+                
+            End With
+            
+        Next sldno
+        
+        
+        'For SldNo2 = 7 To 8
+            
+         '   Src_PPT.Windows(1).Activate
+         '   Src_PPT.Slides.Range(Array(Map.Range("AB" & SldNo2).Value)).Copy
+            
+         '   Tgt_PPT.Windows(1).Activate
+         '   Tgt_PPT.Slides.Paste Index:=Map.Range("AC" & SldNo2).Value
+            
+        'Next SldNo2
+        
+        Tgt_PPT.Save
+        Tgt_PPT.Close
+        
+        Src_PPT.Close
+        New_PowerPoint.Quit
+        Set New_PowerPoint = Nothing
+        Set Src_PPT = Nothing
+        Set Tgt_PPT = Nothing
+        Set shpCount = Nothing
+        Set ShpNumber = Nothing
+        Set oSld = Nothing
+    Next Inc
+    
+    MsgBox "Specific Slides from Source To Target Presentations Copied Successfully", vbOKOnly, "Final Presentation Ready"
+End Sub
+
+
+
+
+
+
+
+'###################################################################################################################
+
+'Load 2
+'Branch MAPS
+'By Branch Maps to Final
+
+Sub load_BranchMaps_to_finalPPT()
+    Dim New_PowerPoint As Object
+    Dim Src_PPT     As PowerPoint.Presentation
+    Dim Tgt_PPT     As PowerPoint.Presentation
+    
+    Dim Inc         As Integer
+    Dim src         As Integer
+    
+    Set Map = ThisWorkbook.Sheets("Map")
+    
+    For Inc = 2 To 19
+        
+        Src_PPT_Path = Map.Range("C" & Inc).Value
+        Tgt_PPT_Path = Map.Range("f" & Inc).Value
+        Src_PPT_Name = Map.Range("B" & Inc).Value
+        Tgt_PPT_Name = Map.Range("E" & Inc).Value
+        
+        Set New_PowerPoint = Nothing
+        On Error Resume Next
+        Set New_PowerPoint = GetObject(, "PowerPoint.Application")
+        On Error GoTo 0
+        
+        '<< Check whether a PPT Application is Open if open Close and open a New Application >>
+        If New_PowerPoint Is Nothing Then
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+        Else
+            New_PowerPoint.Quit
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+            On Error GoTo 0
+        End If
+        
+        Src_PPT_File = Dir(Src_PPT_Path & "\" & Src_PPT_Name)
+        
+        Set Src_PPT = New_PowerPoint.Presentations.Open(Src_PPT_Path & "\" & Src_PPT_File)
+        
+        Tgt_PPT_File = Dir(Tgt_PPT_Path & "\" & Tgt_PPT_Name)
+        
+        Set Tgt_PPT = New_PowerPoint.Presentations.Open(Tgt_PPT_Path & "\" & Tgt_PPT_File)
+        
+        'Activating the Target Presentation and Pasting at/after Target Slide(Index)
+        Tgt_PPT.Windows(1).Activate
+        
+        'Map: 2-6, UR: 11-15,
+        For sldno = 11 To 15
+            
+            Set oSld = Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes
+            ShpNumber = 1
+            'Tgt_PPT.Slides(Map.Range("W" & SldNo).Value).Shapes(3).Delete
+            
+            For shpCount = 1 To oSld.Count
+                If Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes(ShpNumber).Type = msoPicture Then
+                    Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes(ShpNumber).Delete
+                    
+                Else
+                    ShpNumber = ShpNumber + 1
+                End If
+            Next shpCount
+            
+            Src_PPT.Windows(1).Activate
+            Src_PPT.Slides.Range(Array(Map.Range("V" & sldno).Value)).Copy
+            
+            Tgt_PPT.Windows(1).Activate
+            Tgt_PPT.Slides.Paste Index:=Map.Range("W" & sldno).Value
+            
+            With Tgt_PPT
+                .Slides(Map.Range("W" & sldno).Value).Shapes(2).Copy
+                '.Slides(Map.Range("W" & SldNo).Value).Shapes.Range(Array(1, 2)).Copy
+                .Slides(Map.Range("W" & sldno).Value + 1).Shapes.Paste
+                .Slides(Map.Range("W" & sldno).Value).Delete
+            End With
+            
+            With Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes(3)
+                'size:
+                ''1 inch = 72 points
+                .LockAspectRatio = msoFalse
+                '.LockAspectRatio = msoTrue
+                
+                '.Height = 72 * 6.4
+                .Width = 72 * 13.2
+                
+                '.ScaleHeight 0.75, msoTrue
+                '.ScaleWidth 0.75, msoTrue
+                
+                'position:
+                '.Rotation = 0
+                
+                .Left = 72 * 0.08
+                '.Top = 72 * 0.52
+                
+                'Relative to original picture size = true
+                                
+                'UOR & Del
+                .Height = 72 * 5.8
+                .Top = 72 * 0.9
+                
+            End With
+         
+        Next sldno
+        
+        Tgt_PPT.Save
+        Tgt_PPT.Close
+        
+        Src_PPT.Close
+        New_PowerPoint.Quit
+        Set New_PowerPoint = Nothing
+        Set Src_PPT = Nothing
+        Set Tgt_PPT = Nothing
+        Set shpCount = Nothing
+        Set ShpNumber = Nothing
+        Set oSld = Nothing
+    Next Inc
+    
+    MsgBox "Specific Slides from Source To Target Presentations Copied Successfully", vbOKOnly, "Final Presentation Ready"
+End Sub
+
+
+
+'###################################################################################################################
+
+'Load 2 new req Q1'23
+'Branch MAPS Lease Term & Discounting Maps
+'By Branch Maps to Final
+
+Sub load_BranchMaps_to_finalPPTv2()
+    Dim New_PowerPoint As Object
+    Dim Src_PPT     As PowerPoint.Presentation
+    Dim Tgt_PPT     As PowerPoint.Presentation
+    
+    Dim Inc         As Integer
+    Dim src         As Integer
+    
+    Set Map = ThisWorkbook.Sheets("Map")
+    
+    For Inc = 2 To 19
+        
+        Src_PPT_Path = Map.Range("C" & Inc).Value
+        Tgt_PPT_Path = Map.Range("f" & Inc).Value
+        Src_PPT_Name = Map.Range("B" & Inc).Value
+        Tgt_PPT_Name = Map.Range("E" & Inc).Value
+        
+        Set New_PowerPoint = Nothing
+        On Error Resume Next
+        Set New_PowerPoint = GetObject(, "PowerPoint.Application")
+        On Error GoTo 0
+        
+        '<< Check whether a PPT Application is Open if open Close and open a New Application >>
+        If New_PowerPoint Is Nothing Then
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+        Else
+            New_PowerPoint.Quit
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+            On Error GoTo 0
+        End If
+        
+        Src_PPT_File = Dir(Src_PPT_Path & "\" & Src_PPT_Name)
+        Set Src_PPT = New_PowerPoint.Presentations.Open(Src_PPT_Path & "\" & Src_PPT_File)
+        Tgt_PPT_File = Dir(Tgt_PPT_Path & "\" & Tgt_PPT_Name)
+        Set Tgt_PPT = New_PowerPoint.Presentations.Open(Tgt_PPT_Path & "\" & Tgt_PPT_File)
+        'Activating the Target Presentation and Pasting at/after Target Slide(Index)
+        Tgt_PPT.Windows(1).Activate
+        
+        'LT:17-21, Disc: 23-27
+        For sldno = 17 To 21
+            
+            Set oSld = Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes
+            ShpNumber = 1
+            'Tgt_PPT.Slides(Map.Range("W" & SldNo).Value).Shapes(3).Delete
+            
+            For shpCount = 1 To oSld.Count
+                If Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes(ShpNumber).Type = msoPicture Then
+                    Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes(ShpNumber).Delete
+                    
+                Else
+                    ShpNumber = ShpNumber + 1
+                End If
+            Next shpCount
+            
+            Src_PPT.Windows(1).Activate
+            Src_PPT.Slides.Range(Array(Map.Range("V" & sldno).Value)).Copy
+            
+            Tgt_PPT.Windows(1).Activate
+            Tgt_PPT.Slides.Paste Index:=Map.Range("W" & sldno).Value
+            
+            With Tgt_PPT
+                .Slides(Map.Range("W" & sldno).Value).Shapes(1).Copy
+                '.Slides(Map.Range("W" & SldNo).Value).Shapes.Range(Array(2, 3)).Copy
+                .Slides(Map.Range("W" & sldno).Value + 1).Shapes.Paste
+                .Slides(Map.Range("W" & sldno).Value).Delete
+            End With
+            
+            With Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes(4)
+                'size:
+                ''1 inch = 72 points
+                .LockAspectRatio = msoFalse
+                '.LockAspectRatio = msoTrue
+                .Height = 72 * 5.8
+                .Width = 72 * 13.2
+                '.ScaleHeight 0.75, msoTrue
+                '.ScaleWidth 0.75, msoTrue
+                
+                'position:
+                '.Rotation = 0
+                .Left = 72 * 0.08
+                .Top = 72 * 0.9
+                'Relative to original picture size = true
+                '.ZOrder msoSendBackward
+                .ZOrder msoSendToBack
+                
+            End With
+            
+            With Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes(3)
+                .LockAspectRatio = msoFalse
+                .Height = 72 * 2.6
+                .Width = 72 * 8.8
+                .Left = 72 * 4
+                .Top = 72 * 3.8
+            End With
+            
+
+        Next sldno
+        
+        Tgt_PPT.Save
+        Tgt_PPT.Close
+        
+        Src_PPT.Close
+        New_PowerPoint.Quit
+        Set New_PowerPoint = Nothing
+        Set Src_PPT = Nothing
+        Set Tgt_PPT = Nothing
+        Set shpCount = Nothing
+        Set ShpNumber = Nothing
+        Set oSld = Nothing
+    Next Inc
+    
+    MsgBox "Specific Slides from Source To Target Presentations Copied Successfully", vbOKOnly, "Final Presentation Ready"
+End Sub
+
+
+
+'###################################################################################################################
+
+'Appendix b to b
+
+
+Sub load_Appendix_to_finalPPTv2()
+    Dim New_PowerPoint As Object
+    Dim Src_PPT     As PowerPoint.Presentation
+    Dim Tgt_PPT     As PowerPoint.Presentation
+    
+    Dim Inc         As Integer
+    Dim src         As Integer
+    
+    Set Map = ThisWorkbook.Sheets("Map")
+    
+    For Inc = 2 To 19
+        
+        Src_PPT_Path = Map.Range("C" & Inc).Value
+        Tgt_PPT_Path = Map.Range("f" & Inc).Value
+        Src_PPT_Name = Map.Range("B" & Inc).Value
+        Tgt_PPT_Name = Map.Range("E" & Inc).Value
+        
+        Set New_PowerPoint = Nothing
+        On Error Resume Next
+        Set New_PowerPoint = GetObject(, "PowerPoint.Application")
+        On Error GoTo 0
+        
+        '<< Check whether a PPT Application is Open if open Close and open a New Application >>
+        If New_PowerPoint Is Nothing Then
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+        Else
+            New_PowerPoint.Quit
+            Set New_PowerPoint = New PowerPoint.Application
+            New_PowerPoint.Visible = msoCTrue
+            New_PowerPoint.DisplayAlerts = False
+            On Error GoTo 0
+        End If
+        
+        Src_PPT_File = Dir(Src_PPT_Path & "\" & Src_PPT_Name)
+        Set Src_PPT = New_PowerPoint.Presentations.Open(Src_PPT_Path & "\" & Src_PPT_File)
+        Tgt_PPT_File = Dir(Tgt_PPT_Path & "\" & Tgt_PPT_Name)
+        Set Tgt_PPT = New_PowerPoint.Presentations.Open(Tgt_PPT_Path & "\" & Tgt_PPT_File)
+        'Activating the Target Presentation and Pasting at/after Target Slide(Index)
+        Tgt_PPT.Windows(1).Activate
+        
+        'LT:17-21, Disc: 23-27
+        For sldno = 29 To 29
+            
+            Set oSld = Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes
+            ShpNumber = 1
+            'Tgt_PPT.Slides(Map.Range("W" & SldNo).Value).Shapes(3).Delete
+            
+            For shpCount = 1 To oSld.Count
+                If Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes(ShpNumber).Type = msoPicture Then
+                    Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes(ShpNumber).Delete
+                    
+                Else
+                    ShpNumber = ShpNumber + 1
+                End If
+            Next shpCount
+            
+            Src_PPT.Windows(1).Activate
+            Src_PPT.Slides.Range(Array(Map.Range("V" & sldno).Value)).Copy
+            
+            Tgt_PPT.Windows(1).Activate
+            Tgt_PPT.Slides.Paste Index:=Map.Range("W" & sldno).Value
+            
+            With Tgt_PPT
+                .Slides(Map.Range("W" & sldno).Value).Shapes(2).Copy
+                '.Slides(Map.Range("W" & SldNo).Value).Shapes.Range(Array(2, 3)).Copy
+                .Slides(Map.Range("W" & sldno).Value + 1).Shapes.Paste
+                .Slides(Map.Range("W" & sldno).Value).Delete
+            End With
+            
+            With Tgt_PPT.Slides(Map.Range("W" & sldno).Value).Shapes(3)
+                .LockAspectRatio = msoFalse
+                .Height = 72 * 6.1
+                .Width = 72 * 12
+                .Left = 72 * 0.7
+                .Top = 72 * 0.8
+            End With
+            
+            'With Tgt_PPT.Slides(Map.Range("W" & SldNo).Value).Shapes(3)
+            '    .LockAspectRatio = msoTrue
+            '    '.Height = 72 * 6.1
+            '    .Width = 72 * 13.2
+            '    .Left = 72 * 0.08
+            '    .Top = 72 * 2.2
+            'End With
+
+        Next sldno
+        
+        Tgt_PPT.Save
+        Tgt_PPT.Close
+        
+        Src_PPT.Close
+        New_PowerPoint.Quit
+        Set New_PowerPoint = Nothing
+        Set Src_PPT = Nothing
+        Set Tgt_PPT = Nothing
+        Set shpCount = Nothing
+        Set ShpNumber = Nothing
+        Set oSld = Nothing
+    Next Inc
+    
+    MsgBox "Specific Slides from Source To Target Presentations Copied Successfully", vbOKOnly, "Final Presentation Ready"
+End Sub
+
+
+
+
