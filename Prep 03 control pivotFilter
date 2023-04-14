@@ -1,0 +1,315 @@
+' QTC and UOR Preparation
+
+'Prep 3
+'QTC
+'Export Template QTC into PPT(Model Level
+'R13W QTC file will be the source
+
+
+Sub prep_excel_to_ppt_QTC()
+
+    Set Map = ThisWorkbook.Sheets("Map")
+    
+    Dim path_name As String, name As String
+    'Define Workbook Path & Name
+    path_name = Map.Range("BP10")
+    'Define Workbook Names
+    name = Map.Range("BN10")
+    'Open Workbooks
+    Workbooks.Open Filename:=path_name
+    Sheets("QTC by Units by Submission Date").Select
+
+    
+    For Inc = 12 To 16
+    Dim rng         As Range
+    Dim PowerPointApp As Object
+    Dim myPresentation As Object
+    Dim mySlide     As Object
+    Dim myShape     As Object
+    Dim ArrayOne    As Variant
+    
+    'Create an Instance of PowerPoint
+    On Error Resume Next
+    
+    'Is PowerPoint already opened
+    Set PowerPointApp = GetObject(class:="PowerPoint.Application")
+    
+    'Clear the error between errors
+    Err.Clear
+    
+    'If PowerPoint is not already open then open PowerPoint
+    If PowerPointApp Is Nothing Then Set PowerPointApp = CreateObject(class:="PowerPoint.Application")
+    
+    'Handle if the PowerPoint Application is not found
+    If Err.Number = 429 Then
+        MsgBox "PowerPoint could Not be found, aborting."
+        Exit Sub
+    End If
+    
+    On Error GoTo 0
+    
+    'Optimize Code
+    Application.ScreenUpdating = False
+    
+    'Create a New Presentation
+    Set myPresentation = PowerPointApp.Presentations.Add
+    
+    
+        Dim pvFld1 As PivotField
+        Dim strFilter1 As String
+        
+        Set pvFld1 = ActiveSheet.PivotTables("PivotTable2").PivotFields("WS Group V2")
+        strFilter1 = Map.Range("BN" & Inc)
+        'strFilter1 = "Baltimore Virginia Area"
+        pvFld1.CurrentPage = strFilter1
+        
+        Dim pvFld As PivotField
+        Dim strFilter As String
+        Dim I  As Integer
+        
+    For I = 2 To 19
+        Set pvFld = ActiveSheet.PivotTables("PivotTable2").PivotFields("Area custom")
+        strFilter = Map.Range("J" & 21 - I).Value
+        pvFld.CurrentPage = strFilter
+        
+        With Worksheets("QTC by Units by Submission Date").PivotTables(2).TableRange2
+            LastRow = .Rows(.Rows.Count).Row
+        End With
+        
+        Set rng = ActiveWorkbook.Worksheets("QTC by Units by Submission Date").Range("T14:U" & LastRow)
+        rng.Copy
+        
+        Set mySlide = myPresentation.Slides.Add(1, 12)        '11 = ppLayoutTitleOnly
+        mySlide.Shapes.PasteSpecial DataType:=2        '2 = ppPasteEnhancedMetafile
+        
+        Set myShape = mySlide.Shapes(mySlide.Shapes.Count)
+        'Set position:
+        myShape.Left = 580 '50
+        myShape.Top = 50
+        'myShape.Height = 665
+        myShape.Width = 300 '450
+    Next I
+
+   myPresentation.PageSetup.SlideSize = PpSlideSizeType.ppSlideSizeOnScreen
+   Application.CutCopyMode = False
+  
+Next Inc
+    
+    MsgBox "QTC snips extracted from Excel"
+End Sub
+
+
+
+
+
+
+
+'####################################################################################################################
+
+'Prep 4
+'UOR
+'Export Template UOR into PPT(Model Level)
+'R13W UOR file will be the source
+
+
+Sub prep_excel_to_ppt_UOR()
+
+    Set Map = ThisWorkbook.Sheets("Map")
+    
+    Dim path_name As String, name As String
+    'Define Workbook Path & Name
+    path_name = Map.Range("BP11")
+    'Define Workbook Names
+    name = Map.Range("BN11")
+    'Open Workbooks
+    Workbooks.Open Filename:=path_name
+    Sheets("Utilization %").Select
+
+    
+    For Inc = 12 To 16
+    Dim rng         As Range
+    Dim PowerPointApp As Object
+    Dim myPresentation As Object
+    Dim mySlide     As Object
+    Dim myShape     As Object
+    Dim ArrayOne    As Variant
+    
+    'Create an Instance of PowerPoint
+    On Error Resume Next
+    
+    'Is PowerPoint already opened
+    Set PowerPointApp = GetObject(class:="PowerPoint.Application")
+    
+    'Clear the error between errors
+    Err.Clear
+    
+    'If PowerPoint is not already open then open PowerPoint
+    If PowerPointApp Is Nothing Then Set PowerPointApp = CreateObject(class:="PowerPoint.Application")
+    
+    'Handle if the PowerPoint Application is not found
+    If Err.Number = 429 Then
+        MsgBox "PowerPoint could Not be found, aborting."
+        Exit Sub
+    End If
+    
+    On Error GoTo 0
+    
+    'Optimize Code
+    Application.ScreenUpdating = False
+    
+    'Create a New Presentation
+    Set myPresentation = PowerPointApp.Presentations.Add
+    
+    
+        Dim pvFld1 As PivotField
+        Dim strFilter1 As String
+        
+        Set pvFld1 = ActiveSheet.PivotTables("PivotTable1").PivotFields("Wides V2")
+        strFilter1 = Map.Range("BN" & Inc)
+        'strFilter1 = "Baltimore Virginia Area"
+        pvFld1.CurrentPage = strFilter1
+        
+        Dim pvFld As PivotField
+        Dim strFilter As String
+        Dim I  As Integer
+        
+    For I = 2 To 19
+        Set pvFld = ActiveSheet.PivotTables("PivotTable1").PivotFields("Region Description")
+        strFilter = Map.Range("K" & 21 - I).Value
+        pvFld.CurrentPage = strFilter
+        
+        With Worksheets("Utilization %").PivotTables(1).TableRange2
+            LastRow = .Rows(.Rows.Count).Row
+        End With
+        
+        Set rng = ActiveWorkbook.Worksheets("Utilization %").Range("B13:E" & LastRow)
+        rng.Copy
+        
+        Set mySlide = myPresentation.Slides.Add(1, 12)        '11 = ppLayoutTitleOnly
+        mySlide.Shapes.PasteSpecial DataType:=2        '2 = ppPasteEnhancedMetafile
+        
+        Set myShape = mySlide.Shapes(mySlide.Shapes.Count)
+        'Set position:
+        myShape.Left = 50 '50
+        myShape.Top = 50
+        'myShape.Height = 665
+        myShape.Width = 400 '450
+    Next I
+
+   myPresentation.PageSetup.SlideSize = PpSlideSizeType.ppSlideSizeOnScreen
+   Application.CutCopyMode = False
+  
+Next Inc
+ 
+ MsgBox "UOR snips extracted from Excel"
+End Sub
+
+
+'####################################################################################################################
+
+'Prep 4_new
+'TT
+'Export Template UOR into PPT(Model Level)
+'R13W UOR file will be the source
+
+
+Sub prep_excel_to_ppt_TT()
+
+    Set Map = ThisWorkbook.Sheets("Map")
+    
+    Dim path_name As String, name As String
+    'Define Workbook Path & Name
+    path_name = Map.Range("BP9")
+    'Define Workbook Names
+    name = Map.Range("BN9")
+    'Open Workbooks
+    Workbooks.Open Filename:=path_name
+    Sheets("TT Analysis Final").Select
+
+    
+'    For Inc = 12 To 16
+    Dim rng         As Range
+    Dim PowerPointApp As Object
+    Dim myPresentation As Object
+    Dim mySlide     As Object
+    Dim myShape     As Object
+    Dim ArrayOne    As Variant
+    
+    'Create an Instance of PowerPoint
+    On Error Resume Next
+    
+    'Is PowerPoint already opened
+    Set PowerPointApp = GetObject(class:="PowerPoint.Application")
+    
+    'Clear the error between errors
+    Err.Clear
+    
+    'If PowerPoint is not already open then open PowerPoint
+    If PowerPointApp Is Nothing Then Set PowerPointApp = CreateObject(class:="PowerPoint.Application")
+    
+    'Handle if the PowerPoint Application is not found
+    If Err.Number = 429 Then
+        MsgBox "PowerPoint could Not be found, aborting."
+        Exit Sub
+    End If
+    
+    On Error GoTo 0
+    
+    'Optimize Code
+    Application.ScreenUpdating = False
+    
+    'Create a New Presentation
+    Set myPresentation = PowerPointApp.Presentations.Add
+    
+    
+        Dim pvFld1 As PivotField
+        Dim strFilter1 As String
+        
+'        Set pvFld1 = ActiveSheet.PivotTables("PivotTable1").PivotFields("Wides V2")
+'        strFilter1 = Map.Range("BN" & Inc)
+'        'strFilter1 = "Baltimore Virginia Area"
+'        pvFld1.CurrentPage = strFilter1
+        
+        Dim pvFld As PivotField
+        Dim strFilter As String
+        Dim I  As Integer
+        
+    For I = 2 To 19
+        Set pvFld = ActiveSheet.PivotTables("PivotTable1").PivotFields("Region Name")
+        strFilter = Map.Range("K" & 21 - I).Value
+        pvFld.CurrentPage = strFilter
+        
+        With Worksheets("TT Analysis Final").PivotTables(1).TableRange2
+            LastRow = .Rows(.Rows.Count).Row
+        End With
+        
+        Set rng = ActiveWorkbook.Worksheets("TT Analysis Final").Range("B15:I" & LastRow)
+        rng.Copy
+        
+        Set mySlide = myPresentation.Slides.Add(1, 12)        '11 = ppLayoutTitleOnly
+        mySlide.Shapes.PasteSpecial DataType:=2        '2 = ppPasteEnhancedMetafile
+        
+        Set myShape = mySlide.Shapes(mySlide.Shapes.Count)
+        'Set position:
+        myShape.Left = 50 '50
+        myShape.Top = 50
+        'myShape.Height = 665
+        myShape.Width = 860 '450
+        
+        With myShape
+            .Line.Weight = 1
+            .Line.ForeColor.RGB = RGB(0, 0, 0) 'choose RGB color combination
+            .ZOrder (msoSendToBack)
+        
+        End With
+        
+        
+    Next I
+
+   myPresentation.PageSetup.SlideSize = PpSlideSizeType.ppSlideSizeOnScreen
+   Application.CutCopyMode = False
+  
+'Next Inc
+ 
+ MsgBox "UOR snips extracted from Excel"
+End Sub
